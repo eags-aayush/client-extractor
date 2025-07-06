@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Extractor</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 2rem auto; }
+    input, button { display: block; margin: 1rem 0; width: 100%; padding: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Client Extractor</h1>
+  <form id="extractForm">
+    <input type="text" name="serpapiKey" placeholder="SerpAPI Key" required />
+    <input type="text" name="sheetId" placeholder="Google Sheet ID" required />
+    <input type="text" name="location" placeholder="Location (e.g. Kolkata)" required />
+    <input type="text" name="niche" placeholder="Niche (e.g. photography)" required />
+    <button type="submit">Extract Clients</button>
+  </form>
+  <p id="status"></p>
+  <script>
+    const form = document.getElementById('extractForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      status.textContent = '🔄 Extracting...';
+
+      try {
+        const res = await fetch('/extract', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+          status.textContent = result.message;
+        } else {
+          status.textContent = '❌ ' + result.error;
+        }
+      } catch (err) {
+        status.textContent = '❌ ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
